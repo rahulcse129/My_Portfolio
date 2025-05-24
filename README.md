@@ -11,7 +11,7 @@ This site showcases my skills, projects, and how to get in touch with me.
 
 - 🔥 React + Vite for fast performance
 - 🎨 Tailwind CSS for elegant, responsive design
-- 🌙 Dark mode support
+- 🌙 Dark mode support(Not seeing Right now but coded in the files)
 - 💡 Skills section with animated progress bars
 - 📱 Fully responsive layout
 - 📬 Contact form
