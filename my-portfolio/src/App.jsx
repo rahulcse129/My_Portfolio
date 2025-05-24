@@ -3,7 +3,9 @@ import Contact from './components/Contact.jsx';
 import Navbar from './components/Navbar.jsx';
 import Projects from './components/Projects.jsx';
 import Skills from './components/Skills.jsx';
-
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { useEffect } from 'react';
 
 function App() {
   return (
