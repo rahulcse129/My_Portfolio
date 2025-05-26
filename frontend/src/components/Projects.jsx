@@ -1,84 +1,138 @@
+import { useEffect, useState } from "react";
+
 const Projects = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    techStack: "",
+    highlights: "",
+    github: "",
+    live: "",
+  });
+
+  const fetchProjects = () => {
+    fetch("http://localhost:5000/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        setProjects(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching projects:", err);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this project?")) return;
+
+    const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      setProjects(projects.filter((p) => p._id !== id));
+    } else {
+      alert("Failed to delete project.");
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const newProject = {
+      ...formData,
+      techStack: formData.techStack.split(",").map((s) => s.trim()),
+      highlights: formData.highlights.split(",").map((s) => s.trim()),
+    };
+
+    const res = await fetch("http://localhost:5000/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProject),
+    });
+
+    const data = await res.json();
+    setProjects([...projects, data]);
+
+    setFormData({
+      title: "",
+      description: "",
+      techStack: "",
+      highlights: "",
+      github: "",
+      live: "",
+    });
+  };
+
   return (
     <section id="projects" className="py-12 px-6 bg-gray-100 dark:bg-gray-900">
       <div className="max-w-4xl mx-auto">
-        {/* Section: Projects */}
         <h2 className="text-4xl font-bold mb-8 text-center text-gray-800 dark:text-white">
           Projects
         </h2>
-        <div className="space-y-10">
-          {/* Project 1: Portfolio Website */}
-          <div className="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6">
-            <h3 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">
-              About My Portfolio Website
-            </h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              A responsive and modern portfolio website built with React.js, Vite, and Tailwind CSS to showcase my work and skills. It’s fully optimized for performance and designed with a clean user interface.
-            </p>
-            <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1">
-              <li>🚀 Built with <strong>Vite</strong> for fast development and build times</li>
-              <li>🎨 Styled using <strong>Tailwind CSS</strong></li>
-              <li>🧑‍💻 Modular <strong>React Components</strong></li>
-              <li>📱 Fully <strong>Responsive Design</strong> (desktop/tablet/mobile)</li>
-              <li>📂 Sections: Home, About Me, Skills, Projects, Contact</li>
-              <li>📨 Contact form integration with EmailJS/Formspree</li>
-              <li>🌐 Deployed on <strong>[Your Hosting Platform]</strong></li>
-            </ul>
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              <strong>Tech Stack:</strong> React.js, Vite, Tailwind CSS, HTML, JavaScript
-            </p>
-          </div>
 
-          {/* Project 2: NASA Space Apps Challenge */}
-          <div className="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6">
-            <h3 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">
-              River Guardian – NASA Space Apps 2023
-            </h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Participated in the NASA Space Apps Challenge 2023 as a frontend developer for the "River Guardian" project. The initiative aimed to create a platform showing real-time data about rivers including water quality, tides, weather, and local wildlife.
-            </p>
-            <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1">
-              <li>🎨 Designed user interfaces using React.js and Tailwind CSS</li>
-              <li>📊 Integrated real-time data visualizations with Chart.js</li>
-              <li>📱 Ensured responsive design for multiple device types</li>
-              <li>🤝 Collaborated with backend team for API integration</li>
-            </ul>
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              <strong>Tech Stack:</strong> React.js, Tailwind CSS, Chart.js, HTML5, CSS3, JavaScript
-            </p>
-            <a
-              href="https://github.com/ExoQuesters/nasaspaceapp2023"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-4 text-blue-500 hover:underline"
-            >
-              🔗 GitHub Repository
-            </a>
-          </div>
-        </div>
+        {/* ➕ Add Project Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 mb-12 bg-white dark:bg-gray-800 p-6 rounded shadow-md">
+          <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">Add New Project</h3>
+          <input type="text" name="title" placeholder="Title" required value={formData.title} onChange={handleChange} className="w-full px-3 py-2 border rounded dark:bg-gray-700" />
+          <textarea name="description" placeholder="Description" required value={formData.description} onChange={handleChange} className="w-full px-3 py-2 border rounded dark:bg-gray-700" />
+          <input type="text" name="techStack" placeholder="Tech Stack (comma-separated)" value={formData.techStack} onChange={handleChange} className="w-full px-3 py-2 border rounded dark:bg-gray-700" />
+          <input type="text" name="highlights" placeholder="Highlights (comma-separated)" value={formData.highlights} onChange={handleChange} className="w-full px-3 py-2 border rounded dark:bg-gray-700" />
+          <input type="url" name="github" placeholder="GitHub URL" value={formData.github} onChange={handleChange} className="w-full px-3 py-2 border rounded dark:bg-gray-700" />
+          <input type="url" name="live" placeholder="Live Site URL" value={formData.live} onChange={handleChange} className="w-full px-3 py-2 border rounded dark:bg-gray-700" />
+          <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Add Project</button>
+        </form>
 
-        {/* Section: Research Experience */}
-        <h2 className="text-4xl font-bold mt-16 mb-8 text-center text-gray-800 dark:text-white">
-          Research Experience
-        </h2>
+        {/* 📋 Display Projects */}
         <div className="space-y-10">
-          <div className="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6">
-            <h3 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">
-              Near-Earth Object (NEO) Observation – NASA & IASC
-            </h3>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Conducted asteroid and NEO observation research in 9th grade through the International Astronomical Search Collaboration (IASC), in partnership with NASA. This involved using real astronomical data to track Main Belt Asteroids and identify potential Near-Earth Objects.
-            </p>
-            <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1">
-              <li>🔭 Used <strong>Astrometrica</strong> to analyze FITS images from the PAN-STARRS telescope</li>
-              <li>🛰️ Performed astrometric measurements to track celestial object movement</li>
-              <li>📊 Applied data analysis techniques for identifying and confirming asteroid paths</li>
-              <li>🌐 Submitted reports that contributed to real-world astronomical databases</li>
-            </ul>
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              <strong>Skills:</strong> Image Analysis, Astrometry, Data Interpretation, Scientific Observation
-            </p>
-          </div>
+          {loading ? (
+            <p className="text-center text-gray-600 dark:text-gray-400">Loading projects...</p>
+          ) : projects.length > 0 ? (
+            projects.map((project) => (
+              <div key={project._id} className="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6 relative">
+                <h3 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-white">
+                  {project.title}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                  {project.description}
+                </p>
+                <ul className="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1">
+                  {project.highlights?.map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                  <strong>Tech Stack:</strong> {project.techStack?.join(", ")}
+                </p>
+                <div className="mt-4 flex gap-4">
+                  {project.github && (
+                    <a href={project.github} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">🔗 GitHub</a>
+                  )}
+                  {project.live && (
+                    <a href={project.live} target="_blank" rel="noopener noreferrer" className="text-green-500 hover:underline">🌐 Live Site</a>
+                  )}
+                </div>
+
+                {/* ❌ Delete Button */}
+                <button onClick={() => handleDelete(project._id)} className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">
+                  🗑 Delete
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-600 dark:text-gray-400">No projects found.</p>
+          )}
         </div>
       </div>
     </section>

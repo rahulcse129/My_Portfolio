@@ -6,6 +6,7 @@ import Skills from './components/Skills.jsx';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect } from 'react';
+import AddProject from './components/AddProject.jsx';
 
 function App() {
   return (
