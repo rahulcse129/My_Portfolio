@@ -1,7 +1,3 @@
-Certainly! Here's a comprehensive `README.md` file for your MERN Stack Portfolio Website project, incorporating both frontend and backend details:
-
----
-
 # 💼 My Portfolio Website
 
 Welcome to my personal portfolio website built using the **MERN Stack**: **MongoDB**, **Express.js**, **React.js**, and **Node.js**. This site showcases my skills, projects, and provides a platform to get in touch with me.
