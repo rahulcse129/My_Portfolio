@@ -7,6 +7,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useEffect } from 'react';
 import AddProject from './components/AddProject.jsx';
+import FaceDetector from './components/FaceDetector.jsx';
+import Chatbot from "./components/Chatbot.jsx";
 
 function App() {
   return (
@@ -14,6 +16,7 @@ function App() {
       <Navbar />
       <main className="px-6 py-10 space-y-16">
         <About />
+        <FaceDetector />
         <Projects />
         <Skills />
         <Contact />
@@ -24,6 +27,7 @@ function App() {
           ⬆
         </button>
       </main>
+      <Chatbot />
     </div>
   );
 }
